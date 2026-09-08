@@ -27,6 +27,11 @@ export const SignupScreen = () => {
 
   const { control, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
+    defaultValues: {
+      name: "Harsh Vardhan Singh",
+      email: "harshsingh23432@gmail.com",
+      password: "password123",
+    },
   });
 
   const onSubmit = async (values: FormData) => {

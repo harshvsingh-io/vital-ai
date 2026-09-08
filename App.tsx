@@ -40,10 +40,17 @@ const styles = StyleSheet.create({
     web: {
       flex: 1,
       width: "100%",
-      maxWidth: 520,
+      maxWidth: 500,
       marginHorizontal: "auto",
       height: "100%",
       position: "relative" as const,
+      borderLeftWidth: 1,
+      borderRightWidth: 1,
+      borderColor: "rgba(255, 255, 255, 0.08)",
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 12 },
+      shadowOpacity: 0.4,
+      shadowRadius: 28,
     },
     default: {
       flex: 1,

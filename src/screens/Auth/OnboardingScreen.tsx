@@ -1,12 +1,18 @@
 import React, { useRef, useState } from "react";
-import { Dimensions, FlatList, StyleSheet, Text, View } from "react-native";
+import {
+  FlatList,
+  LayoutChangeEvent,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  useWindowDimensions,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { useAppTheme } from "@/theme/ThemeContext";
 import { spacing, typography } from "@/theme/tokens";
 import { Button } from "@/components/Button";
-
-const { width } = Dimensions.get("window");
 
 const slides = [
   {
@@ -31,10 +37,19 @@ export const OnboardingScreen = () => {
   const navigation = useNavigation<any>();
   const [index, setIndex] = useState(0);
   const listRef = useRef<FlatList>(null);
+  const { width: winWidth } = useWindowDimensions();
+  const [containerWidth, setContainerWidth] = useState(Math.min(winWidth, 520));
+
+  const onLayout = (e: LayoutChangeEvent) => {
+    const w = e.nativeEvent.layout.width;
+    if (w > 0 && Math.abs(w - containerWidth) > 2) {
+      setContainerWidth(w);
+    }
+  };
 
   const next = () => {
     if (index < slides.length - 1) {
-      listRef.current?.scrollToIndex({ index: index + 1 });
+      listRef.current?.scrollToIndex({ index: index + 1, animated: true });
       setIndex(index + 1);
     } else {
       navigation.navigate("Login");
@@ -42,7 +57,13 @@ export const OnboardingScreen = () => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} onLayout={onLayout}>
+      <View style={styles.headerBar}>
+        <TouchableOpacity onPress={() => navigation.navigate("Login")} style={styles.skipBtn}>
+          <Text style={[styles.skipText, { color: colors.textSecondary }]}>Skip</Text>
+        </TouchableOpacity>
+      </View>
+
       <FlatList
         ref={listRef}
         data={slides}
@@ -50,9 +71,11 @@ export const OnboardingScreen = () => {
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item) => item.title}
-        onMomentumScrollEnd={(e) => setIndex(Math.round(e.nativeEvent.contentOffset.x / width))}
+        onMomentumScrollEnd={(e) =>
+          setIndex(Math.round(e.nativeEvent.contentOffset.x / (containerWidth || 1)))
+        }
         renderItem={({ item }) => (
-          <View style={[styles.slide, { width }]}>
+          <View style={[styles.slide, { width: containerWidth }]}>
             <View style={[styles.glyphCircle, { backgroundColor: colors.primary }]}>
               <Text style={styles.glyph}>{item.glyph}</Text>
             </View>
@@ -61,17 +84,22 @@ export const OnboardingScreen = () => {
           </View>
         )}
       />
+
       <View style={styles.dots}>
         {slides.map((_, i) => (
           <View
             key={i}
             style={[
               styles.dot,
-              { backgroundColor: i === index ? colors.primary : colors.border, width: i === index ? 24 : 8 },
+              {
+                backgroundColor: i === index ? colors.primary : colors.border,
+                width: i === index ? 24 : 8,
+              },
             ]}
           />
         ))}
       </View>
+
       <View style={styles.footer}>
         <Button label={index === slides.length - 1 ? "Get Started" : "Next"} onPress={next} />
       </View>
@@ -81,19 +109,37 @@ export const OnboardingScreen = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  slide: { alignItems: "center", justifyContent: "center", paddingHorizontal: spacing.xxl },
+  headerBar: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.sm,
+  },
+  skipBtn: { padding: spacing.sm },
+  skipText: { ...typography.caption, fontWeight: "600" },
+  slide: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: spacing.xxl,
+  },
   glyphCircle: {
     width: 96,
     height: 96,
-    borderRadius: 32,
+    borderRadius: 36,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: spacing.xxl,
   },
-  glyph: { fontSize: 40, color: "#fff" },
-  title: { ...typography.h1, textAlign: "center", marginBottom: spacing.md },
+  glyph: { fontSize: 42, color: "#fff" },
+  title: { ...typography.display, textAlign: "center", marginBottom: spacing.sm },
   body: { ...typography.body, textAlign: "center", lineHeight: 22 },
-  dots: { flexDirection: "row", justifyContent: "center", gap: 6, marginBottom: spacing.xl },
+  dots: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: spacing.sm,
+    marginBottom: spacing.xl,
+  },
   dot: { height: 8, borderRadius: 4 },
   footer: { paddingHorizontal: spacing.xl, paddingBottom: spacing.xl },
 });
