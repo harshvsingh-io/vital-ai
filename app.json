@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "Vital AI",
+    "slug": "vital-ai",
+    "scheme": "vitalai",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "backgroundColor": "#0B0F14"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "bundleIdentifier": "com.vitalai.app",
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Vital AI uses your camera to scan lab reports and prescriptions.",
+        "NSMicrophoneUsageDescription": "Vital AI uses your microphone for the voice health assistant.",
+        "NSLocationWhenInUseUsageDescription": "Vital AI uses your location to find nearby hospitals and clinics."
+      }
+    },
+    "android": {
+      "package": "com.vitalai.app",
+      "permissions": [
+        "CAMERA",
+        "RECORD_AUDIO",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "POST_NOTIFICATIONS"
+      ]
+    },
+    "plugins": [
+      "expo-secure-store",
+      "expo-notifications",
+      "expo-image-picker",
+      "expo-location"
+    ]
+  }
+}
