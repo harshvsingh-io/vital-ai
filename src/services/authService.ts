@@ -1,4 +1,4 @@
-import * as SecureStore from "expo-secure-store";
+import { storage } from "@/utils/storage";
 import { apiClient } from "./apiClient";
 import { APP_CONFIG } from "@/constants/config";
 import { User } from "@/types";
@@ -10,8 +10,8 @@ interface AuthResponse {
 }
 
 async function persistSession(res: AuthResponse) {
-  await SecureStore.setItemAsync(APP_CONFIG.sessionStorageKey, res.accessToken);
-  await SecureStore.setItemAsync(APP_CONFIG.refreshTokenKey, res.refreshToken);
+  await storage.setItem(APP_CONFIG.sessionStorageKey, res.accessToken);
+  await storage.setItem(APP_CONFIG.refreshTokenKey, res.refreshToken);
 }
 
 export const authService = {
@@ -55,12 +55,12 @@ export const authService = {
   },
 
   async logout(): Promise<void> {
-    await SecureStore.deleteItemAsync(APP_CONFIG.sessionStorageKey);
-    await SecureStore.deleteItemAsync(APP_CONFIG.refreshTokenKey);
+    await storage.deleteItem(APP_CONFIG.sessionStorageKey);
+    await storage.deleteItem(APP_CONFIG.refreshTokenKey);
   },
 
   async getCurrentUser(): Promise<User | null> {
-    const token = await SecureStore.getItemAsync(APP_CONFIG.sessionStorageKey);
+    const token = await storage.getItem(APP_CONFIG.sessionStorageKey);
     if (!token) return null;
     const { data } = await apiClient.get<{ data: User }>("/auth/me");
     return data.data;

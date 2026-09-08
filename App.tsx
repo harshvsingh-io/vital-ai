@@ -1,5 +1,6 @@
 import "react-native-gesture-handler";
 import React from "react";
+import { Platform, StyleSheet, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -15,15 +16,37 @@ const queryClient = new QueryClient({
 
 export default function App() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={styles.root}>
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
           <ThemeProvider>
-            <StatusBar style="auto" />
-            <RootNavigator />
+            <View style={styles.webContainer}>
+              <StatusBar style="auto" />
+              <RootNavigator />
+            </View>
           </ThemeProvider>
         </QueryClientProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 }
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: "#0B0F14",
+  },
+  webContainer: Platform.select({
+    web: {
+      flex: 1,
+      width: "100%",
+      maxWidth: 520,
+      marginHorizontal: "auto",
+      height: "100%",
+      position: "relative" as const,
+    },
+    default: {
+      flex: 1,
+    },
+  }),
+});

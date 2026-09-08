@@ -10,6 +10,11 @@
     "splash": {
       "backgroundColor": "#0B0F14"
     },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/favicon.png"
+    },
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "bundleIdentifier": "com.vitalai.app",

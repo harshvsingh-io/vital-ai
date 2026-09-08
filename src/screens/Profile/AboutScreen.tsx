@@ -7,6 +7,7 @@ import { spacing, typography, radius } from "@/theme/tokens";
 import { Card } from "@/components/Card";
 import { SocialLinks } from "@/components/SocialLinks";
 import { aboutService } from "@/services/aboutService";
+import { FounderProfile, TeamMember } from "@/types";
 
 // Founder details and every team member (position, name, photo, and social
 // links) are fetched live from the Admin Panel's CMS. Admins add, edit,
@@ -16,14 +17,14 @@ import { aboutService } from "@/services/aboutService";
 export const AboutScreen = () => {
   const { colors } = useAppTheme();
 
-  const { data: founder, isLoading: founderLoading } = useQuery({
+  const { data: founder, isLoading: founderLoading } = useQuery<FounderProfile>({
     queryKey: ["about-founder"],
-    queryFn: aboutService.getFounder,
+    queryFn: () => aboutService.getFounder(),
   });
 
-  const { data: team, isLoading: teamLoading } = useQuery({
+  const { data: team, isLoading: teamLoading } = useQuery<TeamMember[]>({
     queryKey: ["about-team"],
-    queryFn: aboutService.getTeamMembers,
+    queryFn: () => aboutService.getTeamMembers(),
   });
 
   return (
@@ -58,7 +59,7 @@ export const AboutScreen = () => {
         ) : (team ?? []).length === 0 ? (
           <Text style={{ color: colors.textSecondary }}>Team members coming soon.</Text>
         ) : (
-          team!.map((member) => (
+          team!.map((member: TeamMember) => (
             <Card key={member.id} style={styles.teamRow}>
               <Image source={{ uri: member.photoUrl }} style={styles.teamPhoto} />
               <View style={{ flex: 1 }}>

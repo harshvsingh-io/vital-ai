@@ -15,9 +15,9 @@ export const HomeScreen = () => {
   const navigation = useNavigation<any>();
   const user = useAuthStore((s) => s.user);
 
-  const { data: suggestions } = useQuery({
+  const { data: suggestions } = useQuery<string[]>({
     queryKey: ["daily-suggestions"],
-    queryFn: aiService.getDailySuggestions,
+    queryFn: () => aiService.getDailySuggestions(),
   });
 
   const quickActions = [
@@ -64,7 +64,7 @@ export const HomeScreen = () => {
             "Stay hydrated — aim for 2.5L of water today.",
             "A 20-minute walk after lunch can help stabilize blood sugar.",
             "Try winding down 30 minutes earlier tonight for better sleep.",
-          ]).map((tip, i) => (
+          ]).map((tip: string, i: number) => (
             <Text key={i} style={[styles.tip, { color: colors.textSecondary }]}>
               •  {tip}
             </Text>

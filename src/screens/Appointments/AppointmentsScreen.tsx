@@ -8,14 +8,15 @@ import { spacing, typography, radius } from "@/theme/tokens";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
 import { appointmentService } from "@/services/appointmentService";
+import { Appointment } from "@/types";
 
 export const AppointmentsScreen = () => {
   const { colors } = useAppTheme();
   const navigation = useNavigation<any>();
 
-  const { data: appointments } = useQuery({
+  const { data: appointments } = useQuery<Appointment[]>({
     queryKey: ["appointments"],
-    queryFn: appointmentService.getMyAppointments,
+    queryFn: () => appointmentService.getMyAppointments(),
   });
 
   return (
@@ -28,12 +29,12 @@ export const AppointmentsScreen = () => {
         <Button label="Find a Doctor" onPress={() => navigation.navigate("DoctorSearch")} />
 
         <Text style={[styles.subheading, { color: colors.textPrimary }]}>Upcoming</Text>
-        {(appointments ?? []).filter((a) => a.status === "upcoming").length === 0 ? (
+        {(appointments ?? []).filter((a: Appointment) => a.status === "upcoming").length === 0 ? (
           <Text style={{ color: colors.textSecondary }}>No upcoming appointments.</Text>
         ) : (
           appointments!
-            .filter((a) => a.status === "upcoming")
-            .map((a) => (
+            .filter((a: Appointment) => a.status === "upcoming")
+            .map((a: Appointment) => (
               <Card key={a.id} style={styles.card}>
                 <Text style={[styles.doctorName, { color: colors.textPrimary }]}>{a.doctor.name}</Text>
                 <Text style={{ color: colors.textSecondary }}>{a.doctor.specialty}</Text>

@@ -8,6 +8,7 @@ import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
 import { TextField } from "@/components/TextField";
 import { healthService } from "@/services/healthService";
+import { MedicationReminder } from "@/types";
 
 export const MedicationReminderScreen = () => {
   const { colors } = useAppTheme();
@@ -17,9 +18,9 @@ export const MedicationReminderScreen = () => {
   const [dosage, setDosage] = useState("");
   const [frequency, setFrequency] = useState("");
 
-  const { data: reminders } = useQuery({
+  const { data: reminders } = useQuery<MedicationReminder[]>({
     queryKey: ["medications"],
-    queryFn: healthService.getMedicationReminders,
+    queryFn: () => healthService.getMedicationReminders(),
   });
 
   const addMutation = useMutation({
@@ -45,7 +46,7 @@ export const MedicationReminderScreen = () => {
       <ScrollView contentContainerStyle={styles.scroll}>
         <Text style={[styles.title, { color: colors.textPrimary }]}>Medication Reminders</Text>
 
-        {(reminders ?? []).map((r) => (
+        {(reminders ?? []).map((r: MedicationReminder) => (
           <Card key={r.id} style={styles.medRow}>
             <View style={{ flex: 1 }}>
               <Text style={[styles.medName, { color: colors.textPrimary }]}>{r.name}</Text>

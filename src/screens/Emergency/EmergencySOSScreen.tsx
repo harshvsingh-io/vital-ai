@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Platform, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import * as Location from "expo-location";
@@ -15,14 +15,28 @@ export const EmergencySOSScreen = () => {
   const triggerSOS = async () => {
     setStatus("sending");
     try {
-      const { status: permStatus } = await Location.requestForegroundPermissionsAsync();
       let lat = 0;
       let lng = 0;
-      if (permStatus === "granted") {
-        const loc = await Location.getCurrentPositionAsync({});
-        lat = loc.coords.latitude;
-        lng = loc.coords.longitude;
+
+      if (Platform.OS === "web" && typeof navigator !== "undefined" && navigator.geolocation) {
+        try {
+          const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
+          });
+          lat = pos.coords.latitude;
+          lng = pos.coords.longitude;
+        } catch {
+          // Use default coordinates if user denies or timeout
+        }
+      } else {
+        const { status: permStatus } = await Location.requestForegroundPermissionsAsync();
+        if (permStatus === "granted") {
+          const loc = await Location.getCurrentPositionAsync({});
+          lat = loc.coords.latitude;
+          lng = loc.coords.longitude;
+        }
       }
+
       await appointmentService.triggerEmergencySOS(lat, lng);
       setStatus("sent");
     } catch {

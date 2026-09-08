@@ -1,5 +1,5 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
-import * as SecureStore from "expo-secure-store";
+import { storage } from "@/utils/storage";
 import { APP_CONFIG } from "@/constants/config";
 
 export const apiClient = axios.create({
@@ -9,7 +9,7 @@ export const apiClient = axios.create({
 });
 
 apiClient.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
-  const token = await SecureStore.getItemAsync(APP_CONFIG.sessionStorageKey);
+  const token = await storage.getItem(APP_CONFIG.sessionStorageKey);
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -30,11 +30,11 @@ apiClient.interceptors.response.use(
       if (!isRefreshing) {
         isRefreshing = true;
         try {
-          const refreshToken = await SecureStore.getItemAsync(APP_CONFIG.refreshTokenKey);
+          const refreshToken = await storage.getItem(APP_CONFIG.refreshTokenKey);
           const { data } = await axios.post(`${APP_CONFIG.apiBaseUrl}/auth/refresh`, {
             refreshToken,
           });
-          await SecureStore.setItemAsync(APP_CONFIG.sessionStorageKey, data.accessToken);
+          await storage.setItem(APP_CONFIG.sessionStorageKey, data.accessToken);
           pendingQueue.forEach((resolve) => resolve());
           pendingQueue = [];
         } finally {

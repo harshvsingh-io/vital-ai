@@ -25,7 +25,7 @@ export const VitalsTrackerScreen = () => {
   const [value, setValue] = useState("");
   const queryClient = useQueryClient();
 
-  const { data: readings } = useQuery({
+  const { data: readings } = useQuery<VitalReading[]>({
     queryKey: ["vitals", selected],
     queryFn: () => healthService.getVitals(selected),
   });
@@ -88,7 +88,7 @@ export const VitalsTrackerScreen = () => {
         {(readings ?? []).length === 0 ? (
           <Text style={{ color: colors.textSecondary }}>No readings logged yet.</Text>
         ) : (
-          readings!.map((r) => (
+          readings!.map((r: VitalReading) => (
             <Card key={r.id} style={styles.readingRow}>
               <Text style={{ color: colors.textPrimary }}>
                 {r.value} {r.unit}

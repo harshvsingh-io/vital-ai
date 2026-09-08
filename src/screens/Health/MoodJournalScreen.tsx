@@ -24,7 +24,7 @@ export const MoodJournalScreen = () => {
   const [mood, setMood] = useState<MoodEntry["mood"] | null>(null);
   const [note, setNote] = useState("");
 
-  const { data: history } = useQuery({
+  const { data: history } = useQuery<MoodEntry[]>({
     queryKey: ["mood-history"],
     queryFn: () => healthService.getMoodHistory(),
   });
@@ -79,7 +79,7 @@ export const MoodJournalScreen = () => {
         </Card>
 
         <Text style={[styles.subheading, { color: colors.textPrimary }]}>History</Text>
-        {(history ?? []).map((entry) => (
+        {(history ?? []).map((entry: MoodEntry) => (
           <Card key={entry.id} style={styles.historyRow}>
             <Text style={{ fontSize: 20, marginRight: spacing.md }}>
               {MOODS.find((m) => m.key === entry.mood)?.glyph}
